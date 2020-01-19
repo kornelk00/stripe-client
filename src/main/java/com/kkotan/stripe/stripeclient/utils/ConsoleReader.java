@@ -2,6 +2,8 @@ package com.kkotan.stripe.stripeclient.utils;
 
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,8 +12,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ConsoleReader {
+	private static final String REGEX = "^[A-Za-z0-9+_.-]+@(.+)$";
+
 	private static final Logger logger = LogManager.getLogger(ConsoleReader.class);
-	
+
 	@Autowired
 	private Scanner scanner;
 
@@ -55,11 +59,24 @@ public class ConsoleReader {
 		}
 		return amount;
 	}
-	
-	public String readEmailAddress() {
+
+	public Optional<String> readEmailAddress() {
 		System.out.println("Please enter email address for Stripe registration");
-		String emailAddress = scanner.nextLine();
+		Optional<String> emailAddress = Optional.empty();
+		while (!emailAddress.isPresent()) {
+			if (scanner.hasNext()) {
+				emailAddress = Optional.ofNullable(scanner.nextLine());
+				Pattern pattern = Pattern.compile(REGEX);
+
+				Matcher matcher = pattern.matcher(emailAddress.get());
+				if (!matcher.matches()) {
+					System.out.println("The email address provided doesn't seem valid. Please provide a valid email address");
+					emailAddress = Optional.empty();
+				}
+			}
+		}
 		return emailAddress;
+
 	}
 
 	public void close() {

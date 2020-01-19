@@ -26,7 +26,7 @@ public class StripeClientApplication {
 
 			System.out.println("Welcome!");
 
-			String emailAddress = consoleReader.readEmailAddress();
+			Optional<String> emailAddress = consoleReader.readEmailAddress();
 
 			Customer customer = stripeClient.registerCustomerWithCard(emailAddress);
 

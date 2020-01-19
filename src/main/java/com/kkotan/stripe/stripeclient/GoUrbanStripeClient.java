@@ -23,9 +23,9 @@ public class GoUrbanStripeClient {
 	@Autowired
 	private StripeConnector stripeConnector;
 
-	public Customer registerCustomerWithCard(String emailAddress) throws StripeException {
-		System.out.println("Registering customer with email address: " + emailAddress);
-		Customer customer = stripeConnector.createCustomer(emailAddress);
+	public Customer registerCustomerWithCard(Optional<String> emailAddress) throws StripeException {
+		System.out.println("Registering customer with email address: " + emailAddress.get());
+		Customer customer = stripeConnector.createCustomer(emailAddress.get());
 		Source source = stripeConnector.createSourceForCustomer(TOKEN, SOURCE_TYPE, customer);
 		stripeConnector.attachSource(source, customer);
 		Customer customerWithSource = stripeConnector.retrieveCustomer(customer.getId());
