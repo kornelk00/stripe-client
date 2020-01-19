@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.kkotan.stripe.stripeclient.connector.StripeConnector;
+import com.kkotan.stripe.stripeclient.exception.StripeClientException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
 import com.stripe.model.Customer;
@@ -59,10 +61,10 @@ class StripeConnectorTests {
 	void createChargeIsCalled_chargeIsCreatedAccordingly() throws StripeException {
 		Customer customer = StripeConnector.createCustomer(CUSTOMER_EMAIL);
 		Source source = StripeConnector.createSourceForCustomer(TOKEN, SOURCE_TYPE, customer);
-		Charge charge = StripeConnector.createChargeForSource(AMOUNT_2000, CURRENCY_EUR, source);
+		Charge charge = StripeConnector.createChargeForSource(AMOUNT_2000, CURRENCY_EUR, source, customer);
 
 		assertFalse(charge.getCaptured());
-		assertEquals(AMOUNT_2000, charge.getAmount());
+		assertEquals(AMOUNT_2000*100, charge.getAmount());
 		assertEquals(CURRENCY_EUR, charge.getCurrency());
 	}
 
@@ -70,7 +72,7 @@ class StripeConnectorTests {
 	void captureChargeIsCalled_chargeIsCaptured() throws StripeException {
 		Customer customer = StripeConnector.createCustomer(CUSTOMER_EMAIL);
 		Source source = StripeConnector.createSourceForCustomer(TOKEN, SOURCE_TYPE, customer);
-		Charge charge = StripeConnector.createChargeForSource(AMOUNT_2000, CURRENCY_EUR, source);
+		Charge charge = StripeConnector.createChargeForSource(AMOUNT_2000, CURRENCY_EUR, source, customer);
 
 		assertFalse(charge.getCaptured());
 		Charge capturedCharge = StripeConnector.captureCharge(charge);
@@ -81,7 +83,7 @@ class StripeConnectorTests {
 	void refundChargeIsCalled_chargeNotCapturedButRefunded() throws StripeException {
 		Customer customer = StripeConnector.createCustomer(CUSTOMER_EMAIL);
 		Source source = StripeConnector.createSourceForCustomer(TOKEN, SOURCE_TYPE, customer);
-		Charge charge = StripeConnector.createChargeForSource(AMOUNT_2000, CURRENCY_EUR, source);
+		Charge charge = StripeConnector.createChargeForSource(AMOUNT_2000, CURRENCY_EUR, source, customer);
 
 		assertFalse(charge.getCaptured());
 		assertFalse(charge.getRefunded());

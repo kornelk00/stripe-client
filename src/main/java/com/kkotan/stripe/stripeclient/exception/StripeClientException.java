@@ -1,4 +1,4 @@
-package com.kkotan.stripe.stripeclient;
+package com.kkotan.stripe.stripeclient.exception;
 
 public class StripeClientException extends IllegalStateException {
 
